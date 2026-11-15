@@ -3056,10 +3056,10 @@ $RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))
       var scale = leftHint.offsetWidth / 70;
       // 관리자가 저장한 좌표가 있으면 그 값을 쓰고, 없으면 자동 기본 위치를 씁니다.
       var custom = arrowSettings[String(count)];
-      var leftX = custom && custom.left ? Number(custom.left.x) : -(59 * scale);
-      var leftY = custom && custom.left ? Number(custom.left.y) : 38;
-      var rightX = custom && custom.right ? Number(custom.right.x) : wheelRect.width - (61 * scale);
-      var rightY = custom && custom.right ? Number(custom.right.y) : wheelRect.height - (104 * scale);
+      var leftX = custom && custom.left ? Number(custom.left.x) : -(wheelRect.width * 0.024);
+      var leftY = custom && custom.left ? Number(custom.left.y) : (wheelRect.height * 0.019);
+      var rightX = custom && custom.right ? Number(custom.right.x) : (wheelRect.width * 1.067);
+      var rightY = custom && custom.right ? Number(custom.right.y) : (wheelRect.height * 0.843);
       leftHint.style.left = (wheelRect.left - canvasRect.left + leftX) + 'px';
       leftHint.style.top = (wheelRect.top - canvasRect.top + leftY) + 'px';
       rightHint.style.left = (wheelRect.left - canvasRect.left + rightX) + 'px';
@@ -3177,10 +3177,10 @@ $RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))
       var targetAngle = wheelInfo.startDeg + (slot + randomPosition) * slice;
       // 더 긴 시간 동안 여러 바퀴 회전하며 강하게 감속하도록 합니다.
       // 약 6초 동안 회전하고, 끝에서 뒤로 튕기지 않고 정확히 멈춥니다.
-      rotation += 2880 + targetAngle - (rotation % 360);
+      rotation += 3600 + targetAngle - (rotation % 360);
       // 원판 이미지와 원판 위의 글자를 하나의 그룹으로 회전시킵니다.
       // 마지막 감속에 살짝 탄력감을 넣어 원판이 자연스럽게 움직이는 느낌을 줍니다.
-      wheel.style.transition = 'transform 6s cubic-bezier(.42,0,.58,1)';
+      wheel.style.transition = 'transform 6s cubic-bezier(.55,.02,.45,1)';
       wheel.style.transform = 'rotate(' + rotation + 'deg)';
       message.textContent = '원판을 아래로 터치하여 돌려주세요!';
       window.setTimeout(function () {
