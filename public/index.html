@@ -3089,9 +3089,12 @@ $RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))
       var forced = Number(adminSettings[String(count)]);
       if (Number.isInteger(forced) && forced >= 0 && forced < count) chosen = forced;
       var slice = 360 / count;
-      // 지정된 결과 칸 안에서 매번 다른 위치에 멈추도록 양 끝을 조금 피한 랜덤 각도를 사용합니다.
-      var randomOffset = slice * (0.16 + Math.random() * 0.68);
-      rotation += 1440 + (360 - chosen * slice - randomOffset) - (rotation % 360);
+      // 선택된 칸의 정중앙을 기준으로 칸 안쪽에서만 흔들리게 합니다.
+      // 칸 경계에 가까워 보이지 않도록 중앙 기준 ±18% 이내로 제한합니다.
+      var centerAngle = 360 - (chosen * slice) - (slice / 2);
+      var randomJitter = (Math.random() - 0.5) * slice * 0.36;
+      var targetAngle = centerAngle + randomJitter;
+      rotation += 1440 + targetAngle - (rotation % 360);
       // 원판 이미지와 원판 위의 글자를 하나의 그룹으로 회전시킵니다.
       wheel.style.transition = 'transform 4.2s cubic-bezier(.12,.73,.16,1)';
       wheel.style.transform = 'rotate(' + rotation + 'deg)';
