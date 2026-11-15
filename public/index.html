@@ -3056,10 +3056,10 @@ $RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))
       var scale = leftHint.offsetWidth / 70;
       // 관리자가 저장한 좌표가 있으면 그 값을 쓰고, 없으면 자동 기본 위치를 씁니다.
       var custom = arrowSettings[String(count)];
-      var leftX = custom && custom.left ? Number(custom.left.x) : -(wheelRect.width * 0.024);
-      var leftY = custom && custom.left ? Number(custom.left.y) : (wheelRect.height * 0.019);
-      var rightX = custom && custom.right ? Number(custom.right.x) : (wheelRect.width * 1.067);
-      var rightY = custom && custom.right ? Number(custom.right.y) : (wheelRect.height * 0.843);
+      var leftX = custom && custom.left ? Number(custom.left.x) : -19;
+      var leftY = custom && custom.left ? Number(custom.left.y) : -3;
+      var rightX = custom && custom.right ? Number(custom.right.x) : 224;
+      var rightY = custom && custom.right ? Number(custom.right.y) : 177;
       leftHint.style.left = (wheelRect.left - canvasRect.left + leftX) + 'px';
       leftHint.style.top = (wheelRect.top - canvasRect.top + leftY) + 'px';
       rightHint.style.left = (wheelRect.left - canvasRect.left + rightX) + 'px';
