@@ -3091,7 +3091,8 @@ $RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))
       var slice = 360 / count;
       // 선택된 칸의 정중앙을 기준으로 칸 안쪽에서만 흔들리게 합니다.
       // 칸 경계에 가까워 보이지 않도록 중앙 기준 ±18% 이내로 제한합니다.
-      var centerAngle = 360 - (chosen * slice) - (slice / 2);
+      // 원본 bg_circle 이미지에서 1번 칸의 중심은 이미 포인터 정중앙(12시)에 있습니다.
+      var centerAngle = 360 - (chosen * slice);
       var randomJitter = (Math.random() - 0.5) * slice * 0.36;
       var targetAngle = centerAngle + randomJitter;
       rotation += 1440 + targetAngle - (rotation % 360);
