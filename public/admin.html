@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>원판돌리기 관리자</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f6f8; color: #222; font-family: Arial, "Malgun Gothic", sans-serif; }
+    .wrap { width: 560px; max-width: calc(100vw - 32px); margin: 48px auto; }
+    .card { background: #fff; border: 1px solid #e2e5e9; border-radius: 14px; padding: 28px; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+    h1 { margin: 0 0 8px; font-size: 24px; }
+    .desc { margin: 0 0 24px; color: #666; line-height: 1.55; font-size: 14px; }
+    .row { display: flex; align-items: center; gap: 16px; padding: 13px 0; border-top: 1px solid #eee; }
+    .row:first-of-type { border-top: 0; }
+    .label { flex: 1; font-weight: 700; }
+    .label small { display: block; margin-top: 4px; color: #999; font-weight: 400; }
+    select { width: 150px; padding: 9px 10px; border: 1px solid #cfd5dc; border-radius: 7px; background: #fff; font-size: 14px; }
+    select:disabled { color: #aaa; background: #f5f5f5; }
+    .actions { display: flex; gap: 8px; margin-top: 24px; }
+    button { flex: 1; padding: 11px 14px; border: 0; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    .save { background: #03c75a; color: #fff; }
+    .reset { background: #eef0f2; color: #333; }
+    #notice { min-height: 20px; margin-top: 14px; text-align: center; color: #03a34a; font-size: 13px; }
+    .hint { margin-top: 18px; color: #888; font-size: 12px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>원판돌리기 관리자</h1>
+      <p class="desc">옵션 개수별로 원판이 멈출 결과 칸을 선택하세요. 저장하면 일반 원판 페이지에서 해당 번호가 결과로 표시됩니다.</p>
+      <div id="controls"></div>
+      <div class="actions"><button class="save" id="save">설정 저장</button><button class="reset" id="reset">랜덤으로 초기화</button></div>
+      <div id="notice"></div>
+      <p class="hint">※ 1개 원판은 일반 화면에서 지원하지 않아 비활성화되어 있습니다. 2~8개 원판만 설정할 수 있습니다.</p>
+    </section>
+  </main>
+<script>
+(function () {
+  var controls = document.getElementById('controls');
+  var notice = document.getElementById('notice');
+  var selects = {};
+  var saved = {};
+
+  function showNotice(text, error) {
+    notice.textContent = text;
+    notice.style.color = error ? '#d33' : '#03a34a';
+    window.setTimeout(function () { notice.textContent = ''; }, 2200);
+  }
+  function buildSelect(count, value) {
+    var select = document.createElement('select');
+    var random = document.createElement('option'); random.value = 'random'; random.textContent = '랜덤'; select.appendChild(random);
+    for (var optionNo = 1; optionNo <= count; optionNo++) {
+      var option = document.createElement('option'); option.value = String(optionNo - 1); option.textContent = '결과 ' + optionNo + '번'; select.appendChild(option);
+    }
+    select.value = Number.isInteger(Number(value)) && Number(value) >= 0 && Number(value) < count ? String(value) : 'random';
+    return select;
+  }
+  function render(settings) {
+    controls.innerHTML = '';
+    for (var count = 1; count <= 8; count++) {
+      var row = document.createElement('div'); row.className = 'row';
+      var label = document.createElement('div'); label.className = 'label'; label.textContent = count + '개 원판';
+      if (count === 1) { var small = document.createElement('small'); small.textContent = '일반 화면 미지원'; label.appendChild(small); }
+      var select;
+      if (count === 1) {
+        select = document.createElement('select'); select.disabled = true;
+        var disabled = document.createElement('option'); disabled.textContent = '사용 안 함'; select.appendChild(disabled);
+      } else select = buildSelect(count, settings[String(count)]);
+      row.appendChild(label); row.appendChild(select); controls.appendChild(row); selects[count] = select;
+    }
+  }
+  async function load() {
+    try {
+      var response = await fetch('/api/settings', { cache: 'no-store' });
+      saved = response.ok ? await response.json() : {};
+    } catch (e) { saved = {}; showNotice('설정을 불러오지 못했습니다.', true); }
+    render(saved);
+  }
+  document.getElementById('save').addEventListener('click', async function () {
+    var settings = {};
+    for (var count = 2; count <= 8; count++) if (selects[count].value !== 'random') settings[String(count)] = Number(selects[count].value);
+    try {
+      var response = await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) });
+      if (!response.ok) throw new Error('save failed');
+      showNotice('설정이 저장되었습니다.');
+    } catch (e) { showNotice('설정 저장에 실패했습니다.', true); }
+  });
+  document.getElementById('reset').addEventListener('click', async function () {
+    try {
+      var response = await fetch('/api/settings', { method: 'DELETE' });
+      if (!response.ok) throw new Error('reset failed');
+      render({}); showNotice('모든 원판이 랜덤 결과로 초기화되었습니다.');
+    } catch (e) { showNotice('초기화에 실패했습니다.', true); }
+  });
+  load();
+})();
+</script>
+</body>
+</html>
