@@ -3089,12 +3089,22 @@ $RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))
       var forced = Number(adminSettings[String(count)]);
       if (Number.isInteger(forced) && forced >= 0 && forced < count) chosen = forced;
       var slice = 360 / count;
-      // 선택된 칸의 정중앙을 기준으로 칸 안쪽에서만 흔들리게 합니다.
-      // 칸 경계에 가까워 보이지 않도록 중앙 기준 ±18% 이내로 제한합니다.
-      // 원본 bg_circle 이미지에서 1번 칸의 중심은 이미 포인터 정중앙(12시)에 있습니다.
-      var centerAngle = 360 - (chosen * slice);
-      var randomJitter = (Math.random() - 0.5) * slice * 0.36;
-      var targetAngle = centerAngle + randomJitter;
+      // 네이버 원본 원판은 개수별로 화면에 배치되는 옵션 순서와 시작각도가 다릅니다.
+      // order는 포인터가 지나가는 순서이며, 숫자는 입력 옵션 번호(1부터)입니다.
+      var wheelTable = {
+        2: { order: [1, 2], startDeg: -90 },
+        3: { order: [1, 2, 3], startDeg: -30 },
+        4: { order: [1, 4, 2, 3], startDeg: -45 },
+        5: { order: [5, 3, 4, 2, 1], startDeg: 0 },
+        6: { order: [5, 3, 4, 2, 6, 1], startDeg: -30 },
+        7: { order: [3, 1, 6, 5, 7, 4, 2], startDeg: 0 },
+        8: { order: [1, 6, 5, 8, 7, 4, 2, 3], startDeg: 0 }
+      };
+      var wheelInfo = wheelTable[count];
+      var slot = wheelInfo.order.indexOf(chosen + 1);
+      // 지정된 옵션 칸 안에서만 랜덤하게 멈추되, 경계에는 닿지 않게 합니다.
+      var randomPosition = 0.32 + Math.random() * 0.36;
+      var targetAngle = wheelInfo.startDeg + (slot + randomPosition) * slice;
       rotation += 1440 + targetAngle - (rotation % 360);
       // 원판 이미지와 원판 위의 글자를 하나의 그룹으로 회전시킵니다.
       wheel.style.transition = 'transform 4.2s cubic-bezier(.12,.73,.16,1)';
