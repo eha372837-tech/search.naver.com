@@ -3118,17 +3118,18 @@ $RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))
       var randomPosition = 0.32 + Math.random() * 0.36;
       var targetAngle = wheelInfo.startDeg + (slot + randomPosition) * slice;
       // 더 긴 시간 동안 여러 바퀴 회전하며 강하게 감속하도록 합니다.
-      // 빠른 회전감을 유지하면서 약 9초 동안 충분히 여러 바퀴 돌립니다.
-      rotation += 4320 + targetAngle - (rotation % 360);
+      // 조금 더 부드럽고 느리게, 약 7.5초 동안 여러 바퀴 회전합니다.
+      rotation += 3600 + targetAngle - (rotation % 360);
       // 원판 이미지와 원판 위의 글자를 하나의 그룹으로 회전시킵니다.
-      wheel.style.transition = 'transform 9s cubic-bezier(.06,.78,.1,1)';
+      // 마지막 감속에 살짝 탄력감을 넣어 원판이 자연스럽게 움직이는 느낌을 줍니다.
+      wheel.style.transition = 'transform 7.5s cubic-bezier(.08,.82,.16,1.04)';
       wheel.style.transform = 'rotate(' + rotation + 'deg)';
       message.textContent = '돌아가는 중...';
       window.setTimeout(function () {
         message.textContent = '"' + values()[chosen] + '"';
         message.style.fontWeight = '700';
         spinning = false; show(againBtn); show(newBtn);
-      }, 9100);
+      }, 7600);
     }
 
     minus.addEventListener('click', function (e) { e.stopPropagation(); if (!configured && count > 2) { count--; update(); } });
