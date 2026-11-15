@@ -6,6 +6,7 @@ const mysql = require('mysql2/promise');
 const PORT = Number(process.env.PORT || 3000);
 const root = path.join(__dirname, 'public');
 const fallbackSettings = new Map();
+const fallbackArrowSettings = new Map();
 let pool = null;
 
 async function initDatabase() {
@@ -14,6 +15,11 @@ async function initDatabase() {
     return;
   }
   pool = mysql.createPool(process.env.DATABASE_URL);
+  await pool.query(`CREATE TABLE IF NOT EXISTS roulette_arrow_settings (
+    option_count INT PRIMARY KEY,
+    settings_json TEXT NOT NULL,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  )`);
   await pool.query(`CREATE TABLE IF NOT EXISTS roulette_settings (
     option_count INT PRIMARY KEY,
     result_index INT NOT NULL,
@@ -57,6 +63,37 @@ async function writeSettings(settings) {
   }
 }
 
+
+async function readArrowSettings() {
+  if (!pool) return Object.fromEntries(fallbackArrowSettings);
+  const [rows] = await pool.query('SELECT option_count, settings_json FROM roulette_arrow_settings ORDER BY option_count');
+  return Object.fromEntries(rows.map((row) => [String(row.option_count), JSON.parse(row.settings_json)]));
+}
+
+async function writeArrowSettings(settings) {
+  const entries = Object.entries(settings || {});
+  for (const [key, value] of entries) {
+    const count = Number(key);
+    if (!Number.isInteger(count) || count < 2 || count > 8 || !value || !value.left || !value.right) throw new Error('invalid arrow settings');
+    for (const side of ['left', 'right']) {
+      if (!Number.isFinite(Number(value[side].x)) || !Number.isFinite(Number(value[side].y))) throw new Error('invalid arrow settings');
+    }
+  }
+  if (!pool) {
+    fallbackArrowSettings.clear();
+    entries.forEach(([key, value]) => fallbackArrowSettings.set(key, value));
+    return;
+  }
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    await connection.query('DELETE FROM roulette_arrow_settings');
+    for (const [key, value] of entries) await connection.query('INSERT INTO roulette_arrow_settings (option_count, settings_json) VALUES (?, ?)', [Number(key), JSON.stringify(value)]);
+    await connection.commit();
+  } catch (error) { await connection.rollback(); throw error; }
+  finally { connection.release(); }
+}
+
 function json(res, status, data) {
   const body = JSON.stringify(data);
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
@@ -84,6 +121,16 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
     if (url.pathname === '/api/settings' && req.method === 'GET') return json(res, 200, await readSettings());
+    if (url.pathname === '/api/arrow-settings' && req.method === 'GET') return json(res, 200, await readArrowSettings());
+    if (url.pathname === '/api/arrow-settings' && req.method === 'PUT') {
+      const body = JSON.parse(await readBody(req) || '{}');
+      await writeArrowSettings(body);
+      return json(res, 200, { ok: true, settings: await readArrowSettings() });
+    }
+    if (url.pathname === '/api/arrow-settings' && req.method === 'DELETE') {
+      await writeArrowSettings({});
+      return json(res, 200, { ok: true, settings: {} });
+    }
     if (url.pathname === '/api/settings' && req.method === 'PUT') {
       const body = JSON.parse(await readBody(req) || '{}');
       await writeSettings(body);

@@ -3039,6 +3039,7 @@ $RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))
     var turnBtn = root.querySelector('.turn');
     var directionHints = Array.prototype.slice.call(root.querySelectorAll('.roulette-direction-hint'));
     var canvasArea = root.querySelector('.canvas_area');
+    var arrowSettings = {};
     var count = 6, rotation = 0, configured = false, spinning = false;
 
     function show(el) { if (el) el.style.display = 'inline-block'; }
@@ -3053,11 +3054,16 @@ $RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))
       var rightHint = root.querySelector('.roulette-direction-hint.right');
       if (!leftHint || !rightHint || !wheelRect.width) return;
       var scale = leftHint.offsetWidth / 70;
-      // 화살표 끝점이 원판 테두리에 닿도록 실제 원판 위치에서 계산합니다.
-      leftHint.style.left = (wheelRect.left - canvasRect.left - (59 * scale)) + 'px';
-      leftHint.style.top = (wheelRect.top - canvasRect.top + 38) + 'px';
-      rightHint.style.left = (wheelRect.right - canvasRect.left - (61 * scale)) + 'px';
-      rightHint.style.top = (wheelRect.bottom - canvasRect.top - (104 * scale)) + 'px';
+      // 관리자가 저장한 좌표가 있으면 그 값을 쓰고, 없으면 자동 기본 위치를 씁니다.
+      var custom = arrowSettings[String(count)];
+      var leftX = custom && custom.left ? Number(custom.left.x) : -(59 * scale);
+      var leftY = custom && custom.left ? Number(custom.left.y) : 38;
+      var rightX = custom && custom.right ? Number(custom.right.x) : wheelRect.width - (61 * scale);
+      var rightY = custom && custom.right ? Number(custom.right.y) : wheelRect.height - (104 * scale);
+      leftHint.style.left = (wheelRect.left - canvasRect.left + leftX) + 'px';
+      leftHint.style.top = (wheelRect.top - canvasRect.top + leftY) + 'px';
+      rightHint.style.left = (wheelRect.left - canvasRect.left + rightX) + 'px';
+      rightHint.style.top = (wheelRect.top - canvasRect.top + rightY) + 'px';
     }
     function activeInputs() { return inputs.slice(0, count); }
     function values() { return activeInputs().map(function (el) { return el.value.trim(); }); }
@@ -3195,6 +3201,7 @@ $RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))
     inputs.forEach(function (input) { input.addEventListener('input', update); });
     window.addEventListener('resize', positionDirectionHints);
     window.addEventListener('load', positionDirectionHints);
+    fetch('/api/arrow-settings', { cache: 'no-store' }).then(function (response) { return response.ok ? response.json() : {}; }).then(function (settings) { arrowSettings = settings || {}; positionDirectionHints(); }).catch(function () {});
     setBtn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); configure(); });
     resetBtn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); reset(); });
     newBtn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); reset(); });

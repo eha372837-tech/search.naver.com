@@ -5,97 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>원판돌리기 관리자</title>
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; background: #f5f6f8; color: #222; font-family: Arial, "Malgun Gothic", sans-serif; }
-    .wrap { width: 560px; max-width: calc(100vw - 32px); margin: 48px auto; }
-    .card { background: #fff; border: 1px solid #e2e5e9; border-radius: 14px; padding: 28px; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
-    h1 { margin: 0 0 8px; font-size: 24px; }
-    .desc { margin: 0 0 24px; color: #666; line-height: 1.55; font-size: 14px; }
-    .row { display: flex; align-items: center; gap: 16px; padding: 13px 0; border-top: 1px solid #eee; }
-    .row:first-of-type { border-top: 0; }
-    .label { flex: 1; font-weight: 700; }
-    .label small { display: block; margin-top: 4px; color: #999; font-weight: 400; }
-    select { width: 150px; padding: 9px 10px; border: 1px solid #cfd5dc; border-radius: 7px; background: #fff; font-size: 14px; }
-    select:disabled { color: #aaa; background: #f5f5f5; }
-    .actions { display: flex; gap: 8px; margin-top: 24px; }
-    button { flex: 1; padding: 11px 14px; border: 0; border-radius: 8px; font-weight: 700; cursor: pointer; }
-    .save { background: #03c75a; color: #fff; }
-    .reset { background: #eef0f2; color: #333; }
-    #notice { min-height: 20px; margin-top: 14px; text-align: center; color: #03a34a; font-size: 13px; }
-    .hint { margin-top: 18px; color: #888; font-size: 12px; line-height: 1.5; }
+    *{box-sizing:border-box} body{margin:0;background:#f5f6f8;color:#222;font-family:Arial,"Malgun Gothic",sans-serif}.wrap{width:620px;max-width:calc(100vw - 24px);margin:32px auto}.card{background:#fff;border:1px solid #e2e5e9;border-radius:14px;padding:24px;box-shadow:0 8px 24px rgba(0,0,0,.06)}h1{margin:0 0 8px;font-size:24px}.desc{margin:0 0 20px;color:#666;line-height:1.5;font-size:14px}.tabs{display:flex;gap:8px;margin:18px 0}.tabs button{flex:1;padding:10px;border:1px solid #d6dbe0;border-radius:8px;background:#fff;font-weight:700;cursor:pointer}.tabs button.active{background:#03c75a;border-color:#03c75a;color:#fff}.panel{display:none}.panel.active{display:block}.row{display:flex;align-items:center;gap:16px;padding:13px 0;border-top:1px solid #eee}.row:first-child{border-top:0}.label{flex:1;font-weight:700}.label small{display:block;margin-top:4px;color:#999;font-weight:400}select{width:150px;padding:9px 10px;border:1px solid #cfd5dc;border-radius:7px;background:#fff;font-size:14px}select:disabled{color:#aaa;background:#f5f5f5}.actions{display:flex;gap:8px;margin-top:20px}button{padding:11px 14px;border:0;border-radius:8px;font-weight:700;cursor:pointer}.actions button{flex:1}.save{background:#03c75a;color:#fff}.reset{background:#eef0f2;color:#333}#notice{min-height:20px;margin-top:14px;text-align:center;color:#03a34a;font-size:13px}.hint{margin-top:18px;color:#888;font-size:12px;line-height:1.5}.arrow-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}.arrow-toolbar select{flex:1}.preview{position:relative;height:330px;overflow:hidden;border:1px solid #e6e0d5;background:#f4f0e6;border-radius:8px}.preview-wheel{position:absolute;width:210px;height:210px;left:50%;top:58px;transform:translateX(-50%);border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.2)}.drag-arrow{position:absolute;width:58px;height:78px;z-index:3;cursor:grab;touch-action:none}.drag-arrow:active{cursor:grabbing}.drag-arrow svg{width:100%;height:100%;overflow:visible}.drag-arrow.left{left:70px;top:85px}.drag-arrow.right{right:70px;top:172px}.coord{display:flex;gap:10px;margin-top:12px}.coord label{flex:1;color:#666;font-size:12px}.coord input{width:100%;margin-top:4px;padding:8px;border:1px solid #d6dbe0;border-radius:6px}.arrow-help{margin:10px 0 0;color:#777;font-size:12px}
   </style>
 </head>
-<body>
-  <main class="wrap">
-    <section class="card">
-      <h1>원판돌리기 관리자</h1>
-      <p class="desc">옵션 개수별로 원판이 멈출 결과 칸을 선택하세요. 저장하면 일반 원판 페이지에서 해당 번호가 결과로 표시됩니다.</p>
-      <div id="controls"></div>
-      <div class="actions"><button class="save" id="save">설정 저장</button><button class="reset" id="reset">랜덤으로 초기화</button></div>
-      <div id="notice"></div>
-      <p class="hint">※ 1개 원판은 일반 화면에서 지원하지 않아 비활성화되어 있습니다. 2~8개 원판만 설정할 수 있습니다.</p>
-    </section>
-  </main>
+<body><main class="wrap"><section class="card"><h1>원판돌리기 관리자</h1><p class="desc">결과 칸과 화살표 위치를 사용자 화면과 분리해서 설정할 수 있습니다.</p><div class="tabs"><button class="active" data-tab="result">결과 칸 설정</button><button data-tab="arrow">화살표 위치 설정</button></div><section class="panel active" id="resultPanel"><div id="controls"></div><div class="actions"><button class="save" id="save">설정 저장</button><button class="reset" id="reset">랜덤으로 초기화</button></div></section><section class="panel" id="arrowPanel"><div class="arrow-toolbar"><label for="arrowCount">원판 개수</label><select id="arrowCount"><option value="2">2개</option><option value="3">3개</option><option value="4">4개</option><option value="5">5개</option><option value="6" selected>6개</option><option value="7">7개</option><option value="8">8개</option></select></div><div class="preview" id="arrowPreview"><img class="preview-wheel" id="previewWheel" src="https://ssl.pstatic.net/sstatic/keypage/outside/mobilegame/circle/im/bg_circle6.png" alt="미리보기 원판"><div class="drag-arrow left" data-side="left"><svg viewBox="0 0 70 92"><path d="M9 74 C11 43 29 17 59 8" fill="none" stroke="#978f82" stroke-width="6" stroke-linecap="round"/><path d="M49 6 L63 4 L59 19 Z" fill="#978f82"/></svg></div><div class="drag-arrow right" data-side="right"><svg viewBox="0 0 70 92"><path d="M61 17 C59 48 42 75 11 84" fill="none" stroke="#978f82" stroke-width="6" stroke-linecap="round"/><path d="M21 85 L7 89 L12 74 Z" fill="#978f82"/></svg></div></div><p class="arrow-help">화살표를 마우스나 손가락으로 직접 끌어 원하는 위치에 놓으세요. 좌표를 숫자로 입력해도 됩니다.</p><div class="coord"><label>왼쪽 X<input id="leftX" type="number" step="1"></label><label>왼쪽 Y<input id="leftY" type="number" step="1"></label></div><div class="coord"><label>오른쪽 X<input id="rightX" type="number" step="1"></label><label>오른쪽 Y<input id="rightY" type="number" step="1"></label></div><div class="actions"><button class="save" id="saveArrows">화살표 위치 저장</button><button class="reset" id="resetArrows">기본 위치로</button></div></section><div id="notice"></div><p class="hint">※ 화살표 좌표는 선택한 원판 미리보기 영역 기준이며, 저장 후 사용자 화면에 반영됩니다.</p></section></main>
 <script>
-(function () {
-  var controls = document.getElementById('controls');
-  var notice = document.getElementById('notice');
-  var selects = {};
-  var saved = {};
-
-  function showNotice(text, error) {
-    notice.textContent = text;
-    notice.style.color = error ? '#d33' : '#03a34a';
-    window.setTimeout(function () { notice.textContent = ''; }, 2200);
-  }
-  function buildSelect(count, value) {
-    var select = document.createElement('select');
-    var random = document.createElement('option'); random.value = 'random'; random.textContent = '랜덤'; select.appendChild(random);
-    for (var optionNo = 1; optionNo <= count; optionNo++) {
-      var option = document.createElement('option'); option.value = String(optionNo - 1); option.textContent = '결과 ' + optionNo + '번'; select.appendChild(option);
-    }
-    select.value = Number.isInteger(Number(value)) && Number(value) >= 0 && Number(value) < count ? String(value) : 'random';
-    return select;
-  }
-  function render(settings) {
-    controls.innerHTML = '';
-    for (var count = 1; count <= 8; count++) {
-      var row = document.createElement('div'); row.className = 'row';
-      var label = document.createElement('div'); label.className = 'label'; label.textContent = count + '개 원판';
-      if (count === 1) { var small = document.createElement('small'); small.textContent = '일반 화면 미지원'; label.appendChild(small); }
-      var select;
-      if (count === 1) {
-        select = document.createElement('select'); select.disabled = true;
-        var disabled = document.createElement('option'); disabled.textContent = '사용 안 함'; select.appendChild(disabled);
-      } else select = buildSelect(count, settings[String(count)]);
-      row.appendChild(label); row.appendChild(select); controls.appendChild(row); selects[count] = select;
-    }
-  }
-  async function load() {
-    try {
-      var response = await fetch('/api/settings', { cache: 'no-store' });
-      saved = response.ok ? await response.json() : {};
-    } catch (e) { saved = {}; showNotice('설정을 불러오지 못했습니다.', true); }
-    render(saved);
-  }
-  document.getElementById('save').addEventListener('click', async function () {
-    var settings = {};
-    for (var count = 2; count <= 8; count++) if (selects[count].value !== 'random') settings[String(count)] = Number(selects[count].value);
-    try {
-      var response = await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) });
-      if (!response.ok) throw new Error('save failed');
-      showNotice('설정이 저장되었습니다.');
-    } catch (e) { showNotice('설정 저장에 실패했습니다.', true); }
-  });
-  document.getElementById('reset').addEventListener('click', async function () {
-    try {
-      var response = await fetch('/api/settings', { method: 'DELETE' });
-      if (!response.ok) throw new Error('reset failed');
-      render({}); showNotice('모든 원판이 랜덤 결과로 초기화되었습니다.');
-    } catch (e) { showNotice('초기화에 실패했습니다.', true); }
-  });
-  load();
+(function(){
+  var controls=document.getElementById('controls'),notice=document.getElementById('notice'),selects={},saved={},arrowSaved={},activeCount=6;
+  var preview=document.getElementById('arrowPreview'),wheel=document.getElementById('previewWheel');
+  var arrows={left:document.querySelector('.drag-arrow.left'),right:document.querySelector('.drag-arrow.right')};
+  function showNotice(t,e){notice.textContent=t;notice.style.color=e?'#d33':'#03a34a';setTimeout(function(){notice.textContent=''},2200)}
+  function buildSelect(count,value){var s=document.createElement('select'),r=document.createElement('option');r.value='random';r.textContent='랜덤';s.appendChild(r);for(var n=1;n<=count;n++){var o=document.createElement('option');o.value=String(n-1);o.textContent='결과 '+n+'번';s.appendChild(o)}s.value=Number.isInteger(Number(value))&&Number(value)>=0&&Number(value)<count?String(value):'random';return s}
+  function render(settings){controls.innerHTML='';for(var count=1;count<=8;count++){var row=document.createElement('div');row.className='row';var label=document.createElement('div');label.className='label';label.textContent=count+'개 원판';if(count===1){var sm=document.createElement('small');sm.textContent='일반 화면 미지원';label.appendChild(sm)}var s=count===1?document.createElement('select'):buildSelect(count,settings[String(count)]);if(count===1){s.disabled=true;var o=document.createElement('option');o.textContent='사용 안 함';s.appendChild(o)}row.appendChild(label);row.appendChild(s);controls.appendChild(row);selects[count]=s}}
+  function defaultArrow(){var wr=wheel.getBoundingClientRect(),pr=preview.getBoundingClientRect(),scale=arrows.left.offsetWidth/70;return {left:{x:wr.left-pr.left-(59*scale),y:wr.top-pr.top+38},right:{x:wr.right-pr.left-(61*scale),y:wr.bottom-pr.top-(104*scale)}}}
+  function currentArrow(){var wr=wheel.getBoundingClientRect(),pr=preview.getBoundingClientRect(),out={};['left','right'].forEach(function(side){var r=arrows[side].getBoundingClientRect();out[side]={x:Math.round(r.left-wr.left),y:Math.round(r.top-wr.top)}});return out}
+  function setInputs(v){document.getElementById('leftX').value=Math.round(v.left.x);document.getElementById('leftY').value=Math.round(v.left.y);document.getElementById('rightX').value=Math.round(v.right.x);document.getElementById('rightY').value=Math.round(v.right.y)}
+  function place(v){var wr=wheel.getBoundingClientRect(),pr=preview.getBoundingClientRect();['left','right'].forEach(function(side){arrows[side].style.left=(wr.left-pr.left+Number(v[side].x))+'px';arrows[side].style.top=(wr.top-pr.top+Number(v[side].y))+'px'});setInputs(v)}
+  function loadArrow(){var v=arrowSaved[String(activeCount)]||defaultArrow();place(v)}
+  function drag(side){var a=arrows[side],start,base;function down(e){e.preventDefault();var p=e.touches?e.touches[0]:e;start={x:p.clientX,y:p.clientY};base=currentArrow();document.addEventListener('mousemove',move);document.addEventListener('mouseup',up);document.addEventListener('touchmove',move,{passive:false});document.addEventListener('touchend',up)}function move(e){var p=e.touches?e.touches[0]:e;if(e.preventDefault)e.preventDefault();var v=currentArrow();v[side]={x:base[side].x+p.clientX-start.x,y:base[side].y+p.clientY-start.y};place(v)}function up(){document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up);document.removeEventListener('touchmove',move);document.removeEventListener('touchend',up)}a.addEventListener('mousedown',down);a.addEventListener('touchstart',down,{passive:false})}
+  ['left','right'].forEach(function(side){drag(side);['X','Y'].forEach(function(axis){document.getElementById(side+axis).addEventListener('input',function(){var v=currentArrow();v[side][axis.toLowerCase()]=Number(this.value)||0;place(v)})})});
+  document.querySelectorAll('.tabs button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.tabs button').forEach(function(x){x.classList.remove('active')});document.querySelectorAll('.panel').forEach(function(x){x.classList.remove('active')});b.classList.add('active');document.getElementById(b.dataset.tab+'Panel').classList.add('active');if(b.dataset.tab==='arrow')setTimeout(loadArrow,0)})});
+  document.getElementById('arrowCount').addEventListener('change',function(){activeCount=Number(this.value);wheel.src='https://ssl.pstatic.net/sstatic/keypage/outside/mobilegame/circle/im/bg_circle'+activeCount+'.png';setTimeout(loadArrow,80)});
+  document.getElementById('saveArrows').addEventListener('click',async function(){arrowSaved[String(activeCount)]=currentArrow();try{var r=await fetch('/api/arrow-settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(arrowSaved)});if(!r.ok)throw 0;showNotice('화살표 위치가 저장되었습니다.')}catch(e){showNotice('화살표 저장에 실패했습니다.',true)}});
+  document.getElementById('resetArrows').addEventListener('click',function(){delete arrowSaved[String(activeCount)];loadArrow();showNotice('기본 위치로 되돌렸습니다.')});
+  document.getElementById('save').addEventListener('click',async function(){var settings={};for(var c=2;c<=8;c++)if(selects[c].value!=='random')settings[String(c)]=Number(selects[c].value);try{var r=await fetch('/api/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(settings)});if(!r.ok)throw 0;showNotice('결과 설정이 저장되었습니다.')}catch(e){showNotice('설정 저장에 실패했습니다.',true)}});
+  document.getElementById('reset').addEventListener('click',async function(){try{var r=await fetch('/api/settings',{method:'DELETE'});if(!r.ok)throw 0;render({});showNotice('모든 원판이 랜덤 결과로 초기화되었습니다.')}catch(e){showNotice('초기화에 실패했습니다.',true)}});
+  Promise.all([fetch('/api/settings',{cache:'no-store'}).then(function(r){return r.json()}),fetch('/api/arrow-settings',{cache:'no-store'}).then(function(r){return r.json()})]).then(function(a){saved=a[0]||{};arrowSaved=a[1]||{};render(saved);loadArrow()}).catch(function(){render({});showNotice('설정을 불러오지 못했습니다.',true)});
+  window.addEventListener('resize',loadArrow);
 })();
-</script>
-</body>
-</html>
+</script></body></html>
