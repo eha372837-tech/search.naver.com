@@ -3140,7 +3140,7 @@ $RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))
       // 마지막 감속에 살짝 탄력감을 넣어 원판이 자연스럽게 움직이는 느낌을 줍니다.
       wheel.style.transition = 'transform 6s cubic-bezier(.22,.72,.28,1)';
       wheel.style.transform = 'rotate(' + rotation + 'deg)';
-      message.textContent = '돌아가는 중...';
+      message.textContent = '원판을 아래로 터치하여 돌려주세요!';
       window.setTimeout(function () {
         wheelFrame.classList.remove('roulette-wobbling');
       }, 5500);
